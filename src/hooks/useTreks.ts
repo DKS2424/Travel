@@ -34,7 +34,7 @@ export const useTreks = () => {
     }
   }
 
-  const addTrek = async (trek: Omit<Trek, 'id' | 'created_at' | 'created_by'>) => {
+  const addTrek = async (trek: Omit<Trek, 'id' | 'created_at'>) => {
     try {
       if (!supabase) {
         return { success: false, error: 'Supabase client not configured. Cannot add trek.' }

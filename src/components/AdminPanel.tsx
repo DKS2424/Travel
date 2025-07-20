@@ -19,7 +19,7 @@ export const AdminPanel: React.FC = () => {
       if (editingTrek) {
         await updateTrek(editingTrek.id, data)
       } else {
-        await addTrek(data)
+        await addTrek({ ...data, created_by: user?.id })
       }
       setShowForm(false)
       setEditingTrek(null)
