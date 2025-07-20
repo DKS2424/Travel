@@ -147,18 +147,18 @@ export const TrekCard: React.FC<TrekCardProps> = ({ trek, index }) => {
             className="flex items-center space-x-2"
             whileHover={{ scale: 1.05 }}
           >
-            <div className="w-full bg-slate-200 rounded-full h-2">
+            <motion.div className="w-full bg-slate-200 rounded-full h-2">
               <motion.div 
                 className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full"
                 initial={{ width: 0 }}
                 whileInView={{ width: `${(trek.current_participants / trek.max_participants) * 100}%` }}
                 transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
               />
-            </div>
+            </motion.div>
             <span className="text-xs text-slate-500 whitespace-nowrap">
               {Math.round((trek.current_participants / trek.max_participants) * 100)}%
             </span>
-          </div>
+          </motion.div>
           
           <motion.button
             whileHover={{ 
