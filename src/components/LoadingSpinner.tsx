@@ -81,9 +81,3 @@ export const LoadingSpinner: React.FC = () => {
     </div>
   )
 }
-      >
-        <Mountain className="h-12 w-12 text-emerald-600" />
-      </motion.div>
-    </div>
-  )
-}
