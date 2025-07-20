@@ -8,6 +8,12 @@ export const useAuth = () => {
   const [isAdminUser, setIsAdminUser] = useState(false)
 
   useEffect(() => {
+    if (!supabase) {
+      setLoading(false)
+      console.error('Supabase client is not initialized. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file.')
+      return
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
@@ -28,6 +34,10 @@ export const useAuth = () => {
   }, [])
 
   const signInWithEmail = async (email: string, password: string) => {
+    if (!supabase) {
+      return { error: 'Supabase client not configured.' }
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -40,6 +50,10 @@ export const useAuth = () => {
   }
 
   const signUpWithEmail = async (email: string, password: string) => {
+    if (!supabase) {
+      return { error: 'Supabase client not configured.' }
+    }
+
     const { error } = await supabase.auth.signUp({
       email,
       password
@@ -52,6 +66,11 @@ export const useAuth = () => {
   }
 
   const signOut = async () => {
+    if (!supabase) {
+      console.error('Supabase client not configured, cannot sign out.')
+      return
+    }
+
     const { error } = await supabase.auth.signOut()
     if (error) console.error('Error logging out:', error.message)
   }

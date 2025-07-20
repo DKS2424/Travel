@@ -9,6 +9,12 @@ export const useTreks = () => {
 
   const fetchTreks = async () => {
     try {
+      if (!supabase) {
+        setError('Supabase client is not initialized. Cannot fetch treks.')
+        setLoading(false)
+        return
+      }
+
       setLoading(true)
       setError(null)
       const { data, error } = await supabase
@@ -30,6 +36,10 @@ export const useTreks = () => {
 
   const addTrek = async (trek: Omit<Trek, 'id' | 'created_at' | 'created_by'>) => {
     try {
+      if (!supabase) {
+        return { success: false, error: 'Supabase client not configured. Cannot add trek.' }
+      }
+
       const { data, error } = await supabase
         .from('treks')
         .insert([trek])
@@ -47,6 +57,10 @@ export const useTreks = () => {
 
   const updateTrek = async (id: string, updates: Partial<Trek>) => {
     try {
+      if (!supabase) {
+        return { success: false, error: 'Supabase client not configured. Cannot update trek.' }
+      }
+
       const { data, error } = await supabase
         .from('treks')
         .update(updates)
@@ -65,6 +79,10 @@ export const useTreks = () => {
 
   const deleteTrek = async (id: string) => {
     try {
+      if (!supabase) {
+        return { success: false, error: 'Supabase client not configured. Cannot delete trek.' }
+      }
+
       const { error } = await supabase
         .from('treks')
         .delete()
