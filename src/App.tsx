@@ -11,6 +11,35 @@ import { useAuth } from './hooks/useAuth'
 import { useTreks } from './hooks/useTreks'
 import { Trek } from './types'
 
+// Floating particles animation component
+const FloatingParticles: React.FC = () => {
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-2 h-2 bg-emerald-400/20 rounded-full"
+          animate={{
+            x: [0, 100, 0],
+            y: [0, -100, 0],
+            opacity: [0, 1, 0],
+          }}
+          transition={{
+            duration: 8 + i * 2,
+            repeat: Infinity,
+            delay: i * 1.5,
+            ease: "easeInOut"
+          }}
+          style={{
+            left: `${10 + i * 15}%`,
+            top: `${20 + i * 10}%`,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
 function App() {
   const { loading: authLoading, user, isAdminUser } = useAuth()
   const { treks, loading: treksLoading } = useTreks()
@@ -23,6 +52,8 @@ function App() {
 
   if (currentPage === 'trek-details' && selectedTrek) {
     return (
+      <>
+        <FloatingParticles />
       <TrekDetailsPage 
         trek={selectedTrek} 
         onNavigateBack={() => {
@@ -30,11 +61,17 @@ function App() {
           setSelectedTrek(null)
         }}
       />
+      </>
     )
   }
 
   if (currentPage === 'admin' && user && isAdminUser) {
-    return <AdminPage onNavigateHome={() => setCurrentPage('home')} />
+    return (
+      <>
+        <FloatingParticles />
+        <AdminPage onNavigateHome={() => setCurrentPage('home')} />
+      </>
+    )
   }
 
   const handleViewTrekDetails = (trek: Trek) => {
@@ -43,7 +80,27 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 relative overflow-hidden">
+      <FloatingParticles />
+      
+      {/* Animated background gradient */}
+      <motion.div
+        className="fixed inset-0 opacity-30 pointer-events-none"
+        animate={{
+          background: [
+            "radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 40% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)"
+          ]
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      
       <Header 
         onAdminToggle={() => setCurrentPage('admin')}
         currentPage={currentPage}
@@ -51,7 +108,7 @@ function App() {
       
       <Hero />
       
-      <main className="container mx-auto px-4 py-16">
+      <main className="container mx-auto px-4 py-16 relative z-10">
         <motion.section
           id="treks"
           initial={{ opacity: 0 }}

@@ -332,7 +332,7 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
           <div>
             <div className="flex items-center justify-between mb-3">
               <label className="block text-sm font-medium text-slate-700">
-                What's Included
+                Inclusions
               </label>
               <motion.button
                 type="button"
@@ -348,10 +348,11 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
             <div className="space-y-2">
               {inclusions.map((inclusion, index) => (
                 <div key={index} className="flex items-center space-x-2">
-                  <input
+                  <textarea
                     value={inclusion}
                     onChange={(e) => updateInclusion(index, e.target.value)}
-                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    rows={2}
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
                     placeholder="e.g., Professional guide, Safety equipment"
                   />
                   <motion.button
@@ -359,7 +360,7 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => removeInclusion(index)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors mt-1"
                   >
                     <Trash2 className="h-4 w-4" />
                   </motion.button>
@@ -372,7 +373,7 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
           <div>
             <div className="flex items-center justify-between mb-3">
               <label className="block text-sm font-medium text-slate-700">
-                What's Not Included
+                Exclusions
               </label>
               <motion.button
                 type="button"
@@ -388,10 +389,11 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
             <div className="space-y-2">
               {exclusions.map((exclusion, index) => (
                 <div key={index} className="flex items-center space-x-2">
-                  <input
+                  <textarea
                     value={exclusion}
                     onChange={(e) => updateExclusion(index, e.target.value)}
-                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    rows={2}
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
                     placeholder="e.g., Personal expenses, Travel insurance"
                   />
                   <motion.button
@@ -399,7 +401,7 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => removeExclusion(index)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors mt-1"
                   >
                     <Trash2 className="h-4 w-4" />
                   </motion.button>

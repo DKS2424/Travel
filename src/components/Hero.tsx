@@ -24,12 +24,31 @@ export const Hero: React.FC = () => {
             transition={{ duration: 0.8 }}
             className="mb-8"
           >
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+            <motion.h1 
+              className="text-5xl md:text-6xl font-bold mb-6 leading-tight"
+              animate={{
+                textShadow: [
+                  "0 0 20px rgba(16, 185, 129, 0.3)",
+                  "0 0 30px rgba(16, 185, 129, 0.5)",
+                  "0 0 20px rgba(16, 185, 129, 0.3)"
+                ]
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
               Discover Your Next
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">
+              <motion.span 
+                className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300"
+                animate={{
+                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                }}
+                style={{
+                  backgroundSize: '200% 200%',
+                }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
                 Adventure
-              </span>
-            </h1>
+              </motion.span>
+            </motion.h1>
             <p className="text-xl md:text-2xl text-emerald-100 mb-8 leading-relaxed">
               Join expert-guided treks across the world's most breathtaking landscapes. 
               From mountain peaks to hidden valleys, your journey begins here.
@@ -42,18 +61,39 @@ export const Hero: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-wrap justify-center gap-8 mb-12"
           >
-            <div className="flex items-center space-x-3">
+            <motion.div 
+              className="flex items-center space-x-3"
+              whileHover={{ 
+                scale: 1.05,
+                y: -5,
+                transition: { duration: 0.3 }
+              }}
+            >
               <Mountain className="h-8 w-8 text-yellow-300" />
               <span className="text-lg font-medium">Expert Guides</span>
-            </div>
-            <div className="flex items-center space-x-3">
+            </motion.div>
+            <motion.div 
+              className="flex items-center space-x-3"
+              whileHover={{ 
+                scale: 1.05,
+                y: -5,
+                transition: { duration: 0.3 }
+              }}
+            >
               <Compass className="h-8 w-8 text-yellow-300" />
               <span className="text-lg font-medium">Curated Routes</span>
-            </div>
-            <div className="flex items-center space-x-3">
+            </motion.div>
+            <motion.div 
+              className="flex items-center space-x-3"
+              whileHover={{ 
+                scale: 1.05,
+                y: -5,
+                transition: { duration: 0.3 }
+              }}
+            >
               <Globe className="h-8 w-8 text-yellow-300" />
               <span className="text-lg font-medium">Global Destinations</span>
-            </div>
+            </motion.div>
           </motion.div>
 
           <motion.div
@@ -62,14 +102,27 @@ export const Hero: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
+              whileHover={{ 
+                scale: 1.08, 
+                y: -5,
+                boxShadow: "0 20px 40px rgba(255, 255, 255, 0.3)",
+                textShadow: "0 0 20px rgba(16, 185, 129, 0.8)"
+              }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-white text-emerald-700 font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="px-8 py-4 bg-white text-emerald-700 font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden"
               onClick={() => {
                 document.getElementById('treks')?.scrollIntoView({ behavior: 'smooth' })
               }}
             >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-blue-400/20"
+                initial={{ x: '-100%' }}
+                whileHover={{ x: '100%' }}
+                transition={{ duration: 0.8 }}
+              />
+              <span className="relative">
               Explore Treks
+              </span>
             </motion.button>
           </motion.div>
         </div>

@@ -282,7 +282,7 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
               <div className="bg-white rounded-xl shadow-lg p-8 border border-slate-100">
                 <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
                   <CheckCircle className="h-6 w-6 mr-3 text-emerald-600" />
-                  What's Included
+                  Inclusions
                 </h3>
                 
                 {trek.inclusions && trek.inclusions.length > 0 ? (
@@ -296,7 +296,7 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
                         className="flex items-center space-x-3"
                       >
                         <div className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0" />
-                        <span className="text-slate-600">{inclusion}</span>
+                        <p className="text-slate-600 leading-relaxed">{inclusion}</p>
                       </motion.div>
                     ))}
                   </div>
@@ -309,7 +309,7 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
               <div className="bg-white rounded-xl shadow-lg p-8 border border-slate-100">
                 <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
                   <XCircle className="h-6 w-6 mr-3 text-red-600" />
-                  What's Not Included
+                  Exclusions
                 </h3>
                 
                 {trek.exclusions && trek.exclusions.length > 0 ? (
@@ -323,7 +323,7 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
                         className="flex items-center space-x-3"
                       >
                         <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0" />
-                        <span className="text-slate-600">{exclusion}</span>
+                        <p className="text-slate-600 leading-relaxed">{exclusion}</p>
                       </motion.div>
                     ))}
                   </div>
