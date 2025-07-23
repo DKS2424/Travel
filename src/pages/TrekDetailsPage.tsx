@@ -315,18 +315,22 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
                 
                 {trek.exclusions && trek.exclusions.length > 0 ? (
                   <div className="space-y-3">
-                    {trek.exclusions.map((exclusion, index) => (
+                    {trek.exclusions.map((exclusion, index) => {
+                      // Split by new lines and filter out empty lines
+                      const points = exclusion.split('\n').filter(point => point.trim() !== '')
+                      return points.map((point, pointIndex) => (
                       <motion.div
-                        key={index}
+                          key={`${index}-${pointIndex}`}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
+                          transition={{ delay: (index * points.length + pointIndex) * 0.05 }}
                         className="flex items-center space-x-3"
                       >
                         <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0" />
-                        <p className="text-slate-600 leading-relaxed">{exclusion}</p>
+                          <p className="text-slate-600 leading-relaxed">{point.trim()}</p>
                       </motion.div>
-                    ))}
+                      ))
+                    })}
                   </div>
                 ) : (
                   <p className="text-slate-500 italic">Exclusions will be updated soon.</p>
