@@ -5,21 +5,41 @@ import { Header } from './components/Header'
 import { Hero } from './components/Hero'
 import { TrekCard } from './components/TrekCard'
 import { AdminPage } from './pages/AdminPage'
+import { TrekDetailsPage } from './pages/TrekDetailsPage'
 import { LoadingSpinner } from './components/LoadingSpinner'
 import { useAuth } from './hooks/useAuth'
 import { useTreks } from './hooks/useTreks'
+import { Trek } from './types'
 
 function App() {
   const { loading: authLoading, user, isAdminUser } = useAuth()
   const { treks, loading: treksLoading } = useTreks()
-  const [currentPage, setCurrentPage] = useState<'home' | 'admin'>('home')
+  const [currentPage, setCurrentPage] = useState<'home' | 'admin' | 'trek-details'>('home')
+  const [selectedTrek, setSelectedTrek] = useState<Trek | null>(null)
 
   if (authLoading || treksLoading) {
     return <LoadingSpinner />
   }
 
+  if (currentPage === 'trek-details' && selectedTrek) {
+    return (
+      <TrekDetailsPage 
+        trek={selectedTrek} 
+        onNavigateBack={() => {
+          setCurrentPage('home')
+          setSelectedTrek(null)
+        }}
+      />
+    )
+  }
+
   if (currentPage === 'admin' && user && isAdminUser) {
     return <AdminPage onNavigateHome={() => setCurrentPage('home')} />
+  }
+
+  const handleViewTrekDetails = (trek: Trek) => {
+    setSelectedTrek(trek)
+    setCurrentPage('trek-details')
   }
 
   return (
@@ -110,7 +130,12 @@ function App() {
               transition={{ duration: 0.8, staggerChildren: 0.1 }}
             >
               {treks.map((trek, index) => (
-                <TrekCard key={trek.id} trek={trek} index={index} />
+                <TrekCard 
+                  key={trek.id} 
+                  trek={trek} 
+                  index={index} 
+                  onViewDetails={() => handleViewTrekDetails(trek)}
+                />
               ))}
             </motion.div>
           )}

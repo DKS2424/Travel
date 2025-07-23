@@ -1,8 +1,9 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
-import { X } from 'lucide-react'
-import { Trek } from '../types'
+import { X, Plus, Trash2, Clock } from 'lucide-react'
+import { Trek, ItineraryDay, ItineraryActivity } from '../types'
+import { useState } from 'react'
 
 interface TrekFormProps {
   trek?: Trek
@@ -14,6 +15,10 @@ interface TrekFormProps {
 type FormData = Omit<Trek, 'id' | 'created_at' | 'created_by'>
 
 export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isLoading }) => {
+  const [inclusions, setInclusions] = useState<string[]>(trek?.inclusions || [''])
+  const [exclusions, setExclusions] = useState<string[]>(trek?.exclusions || [''])
+  const [itinerary, setItinerary] = useState<ItineraryDay[]>(trek?.itinerary || [])
+
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     defaultValues: trek ? {
       title: trek.title,
@@ -26,7 +31,10 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
       start_date: trek.start_date,
       end_date: trek.end_date,
       max_participants: trek.max_participants,
-      current_participants: trek.current_participants
+      current_participants: trek.current_participants,
+      inclusions: trek.inclusions || [],
+      exclusions: trek.exclusions || [],
+      itinerary: trek.itinerary || []
     } : {
       title: '',
       description: '',
@@ -38,9 +46,101 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
       start_date: '',
       end_date: '',
       max_participants: 20,
-      current_participants: 0
+      current_participants: 0,
+      inclusions: [],
+      exclusions: [],
+      itinerary: []
     }
   })
+
+  const addInclusion = () => {
+    setInclusions([...inclusions, ''])
+  }
+
+  const removeInclusion = (index: number) => {
+    setInclusions(inclusions.filter((_, i) => i !== index))
+  }
+
+  const updateInclusion = (index: number, value: string) => {
+    const updated = [...inclusions]
+    updated[index] = value
+    setInclusions(updated)
+  }
+
+  const addExclusion = () => {
+    setExclusions([...exclusions, ''])
+  }
+
+  const removeExclusion = (index: number) => {
+    setExclusions(exclusions.filter((_, i) => i !== index))
+  }
+
+  const updateExclusion = (index: number, value: string) => {
+    const updated = [...exclusions]
+    updated[index] = value
+    setExclusions(updated)
+  }
+
+  const addItineraryDay = () => {
+    const newDay: ItineraryDay = {
+      day: itinerary.length + 1,
+      title: '',
+      activities: [{ id: Date.now().toString(), time: '', description: '' }]
+    }
+    setItinerary([...itinerary, newDay])
+  }
+
+  const removeItineraryDay = (dayIndex: number) => {
+    setItinerary(itinerary.filter((_, i) => i !== dayIndex))
+  }
+
+  const updateItineraryDay = (dayIndex: number, field: keyof ItineraryDay, value: any) => {
+    const updated = [...itinerary]
+    updated[dayIndex] = { ...updated[dayIndex], [field]: value }
+    setItinerary(updated)
+  }
+
+  const addActivity = (dayIndex: number) => {
+    const updated = [...itinerary]
+    const newActivity: ItineraryActivity = {
+      id: Date.now().toString(),
+      time: '',
+      description: ''
+    }
+    updated[dayIndex].activities.push(newActivity)
+    setItinerary(updated)
+  }
+
+  const removeActivity = (dayIndex: number, activityIndex: number) => {
+    const updated = [...itinerary]
+    updated[dayIndex].activities = updated[dayIndex].activities.filter((_, i) => i !== activityIndex)
+    setItinerary(updated)
+  }
+
+  const updateActivity = (dayIndex: number, activityIndex: number, field: keyof ItineraryActivity, value: string) => {
+    const updated = [...itinerary]
+    updated[dayIndex].activities[activityIndex] = {
+      ...updated[dayIndex].activities[activityIndex],
+      [field]: value
+    }
+    setItinerary(updated)
+  }
+
+  const handleFormSubmit = (data: FormData) => {
+    const filteredInclusions = inclusions.filter(item => item.trim() !== '')
+    const filteredExclusions = exclusions.filter(item => item.trim() !== '')
+    const filteredItinerary = itinerary.map(day => ({
+      ...day,
+      activities: day.activities.filter(activity => activity.description.trim() !== '')
+    })).filter(day => day.title.trim() !== '' || day.activities.length > 0)
+
+    onSubmit({
+      ...data,
+      inclusions: filteredInclusions,
+      exclusions: filteredExclusions,
+      itinerary: filteredItinerary
+    })
+  }
 
   return (
     <motion.div
@@ -54,7 +154,7 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
@@ -69,7 +169,7 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
@@ -226,6 +326,175 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               placeholder="https://example.com/image.jpg"
             />
+          </div>
+
+          {/* Inclusions */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-sm font-medium text-slate-700">
+                What's Included
+              </label>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={addInclusion}
+                className="flex items-center space-x-1 px-3 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg text-sm transition-colors"
+              >
+                <Plus className="h-3 w-3" />
+                <span>Add</span>
+              </motion.button>
+            </div>
+            <div className="space-y-2">
+              {inclusions.map((inclusion, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <input
+                    value={inclusion}
+                    onChange={(e) => updateInclusion(index, e.target.value)}
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    placeholder="e.g., Professional guide, Safety equipment"
+                  />
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => removeInclusion(index)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </motion.button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Exclusions */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-sm font-medium text-slate-700">
+                What's Not Included
+              </label>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={addExclusion}
+                className="flex items-center space-x-1 px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm transition-colors"
+              >
+                <Plus className="h-3 w-3" />
+                <span>Add</span>
+              </motion.button>
+            </div>
+            <div className="space-y-2">
+              {exclusions.map((exclusion, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <input
+                    value={exclusion}
+                    onChange={(e) => updateExclusion(index, e.target.value)}
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    placeholder="e.g., Personal expenses, Travel insurance"
+                  />
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => removeExclusion(index)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </motion.button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Itinerary */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-sm font-medium text-slate-700">
+                Detailed Itinerary
+              </label>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={addItineraryDay}
+                className="flex items-center space-x-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors"
+              >
+                <Plus className="h-3 w-3" />
+                <span>Add Day</span>
+              </motion.button>
+            </div>
+            
+            <div className="space-y-4">
+              {itinerary.map((day, dayIndex) => (
+                <div key={dayIndex} className="border border-slate-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                        {day.day}
+                      </div>
+                      <input
+                        value={day.title}
+                        onChange={(e) => updateItineraryDay(dayIndex, 'title', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Day title (e.g., Base Camp to Summit)"
+                      />
+                    </div>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => removeItineraryDay(dayIndex)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </motion.button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {day.activities.map((activity, activityIndex) => (
+                      <div key={activity.id} className="flex items-start space-x-2 bg-slate-50 p-3 rounded-lg">
+                        <div className="flex items-center space-x-2 min-w-0">
+                          <Clock className="h-4 w-4 text-slate-500 flex-shrink-0" />
+                          <input
+                            value={activity.time}
+                            onChange={(e) => updateActivity(dayIndex, activityIndex, 'time', e.target.value)}
+                            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="09:00"
+                          />
+                        </div>
+                        <input
+                          value={activity.description}
+                          onChange={(e) => updateActivity(dayIndex, activityIndex, 'description', e.target.value)}
+                          className="flex-1 px-3 py-1 border border-slate-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Activity description"
+                        />
+                        <motion.button
+                          type="button"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => removeActivity(dayIndex, activityIndex)}
+                          className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </motion.button>
+                      </div>
+                    ))}
+                    
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => addActivity(dayIndex)}
+                      className="w-full py-2 border-2 border-dashed border-slate-300 hover:border-blue-400 text-slate-500 hover:text-blue-600 rounded-lg transition-colors text-sm"
+                    >
+                      + Add Activity
+                    </motion.button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">
