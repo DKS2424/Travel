@@ -274,10 +274,9 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
             </motion.div>
 
             {/* Inclusions & Exclusions */}
-            {/* Inclusions, Exclusions & Things to Carry */}
             <motion.div
               variants={itemVariants}
-              className="grid md:grid-cols-3 gap-6"
+              className="grid md:grid-cols-2 gap-6 mb-8"
             >
               {/* Inclusions */}
               <div className="bg-white rounded-xl shadow-lg p-8 border border-slate-100">
@@ -297,7 +296,7 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
                         className="flex items-center space-x-3"
                       >
                         <div className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0" />
-                        <p className="text-slate-600 leading-relaxed">{inclusion}</p>
+                        <p className="text-slate-600 leading-relaxed">{inclusion.trim()}</p>
                       </motion.div>
                     ))}
                   </div>
@@ -324,7 +323,7 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
                         className="flex items-center space-x-3"
                       >
                         <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0" />
-                        <p className="text-slate-600 leading-relaxed">{exclusion}</p>
+                        <p className="text-slate-600 leading-relaxed">{exclusion.trim()}</p>
                       </motion.div>
                     ))}
                   </div>
@@ -332,35 +331,39 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
                   <p className="text-slate-500 italic">Exclusions will be updated soon.</p>
                 )}
               </div>
+            </motion.div>
 
-              {/* Things to Carry */}
-              <div className="bg-white rounded-xl shadow-lg p-8 border border-slate-100">
+            {/* Things to Carry */}
+            <motion.div
+              variants={itemVariants}
+              className="bg-white rounded-xl shadow-lg p-8 border border-slate-100 mb-8"
+            >
+              <div className="max-w-4xl mx-auto">
                 <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
                   <Shield className="h-6 w-6 mr-3 text-purple-600" />
                   Things to Carry
                 </h3>
                 
                 {trek.things_to_carry && trek.things_to_carry.length > 0 ? (
-                  <div className="space-y-3">
-                    {trek.things_to_carry.map((item, index) => {
-                      // Split by new lines and filter out empty lines
-                      const points = item.split('\n').filter(point => point.trim() !== '')
-                      return points.map((point, pointIndex) => (
-                        <motion.div
-                          key={`${index}-${pointIndex}`}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: (index * points.length + pointIndex) * 0.05 }}
-                          className="flex items-center space-x-3"
-                        >
-                          <div className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0" />
-                          <p className="text-slate-600 leading-relaxed">{point.trim()}</p>
-                        </motion.div>
-                      ))
-                    })}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {trek.things_to_carry.map((item, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg border border-purple-100"
+                      >
+                        <div className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0" />
+                        <p className="text-slate-600 leading-relaxed">{item.trim()}</p>
+                      </motion.div>
+                    ))}
                   </div>
                 ) : (
-                  <p className="text-slate-500 italic">Things to carry will be updated soon.</p>
+                  <div className="text-center py-8">
+                    <Shield className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                    <p className="text-slate-500 italic">Things to carry will be updated soon.</p>
+                  </div>
                 )}
               </div>
             </motion.div>
