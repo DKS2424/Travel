@@ -33,14 +33,27 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
     setIsLoading(true)
     try {
       if (editingTrek) {
-        await updateTrek(editingTrek.id, data)
+        console.log('Updating trek:', editingTrek.id, data)
+        const result = await updateTrek(editingTrek.id, data)
+        if (!result.success) {
+          console.error('Update failed:', result.error)
+          alert('Failed to update trek: ' + result.error)
+          return
+        }
       } else {
-        await addTrek({ ...data, created_by: user?.id })
+        console.log('Adding new trek:', data)
+        const result = await addTrek({ ...data, created_by: user?.id })
+        if (!result.success) {
+          console.error('Add failed:', result.error)
+          alert('Failed to add trek: ' + result.error)
+          return
+        }
       }
       setShowForm(false)
       setEditingTrek(null)
     } catch (error) {
       console.error('Error saving trek:', error)
+      alert('Error saving trek: ' + (error instanceof Error ? error.message : 'Unknown error'))
     } finally {
       setIsLoading(false)
     }

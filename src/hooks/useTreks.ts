@@ -61,6 +61,9 @@ export const useTreks = () => {
         return { success: false, error: 'Supabase client not configured. Cannot update trek.' }
       }
 
+      console.log('Updating trek with ID:', id)
+      console.log('Update data:', updates)
+
       const { data, error } = await supabase
         .from('treks')
         .update(updates)
@@ -68,7 +71,12 @@ export const useTreks = () => {
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase update error:', error)
+        throw error
+      }
+      
+      console.log('Update successful:', data)
       setTreks(prev => prev.map(trek => trek.id === id ? data : trek))
       return { success: true, data }
     } catch (err) {

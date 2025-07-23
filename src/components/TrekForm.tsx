@@ -144,21 +144,24 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
   }
 
   const handleFormSubmit = (data: FormData) => {
-    const filteredInclusions = inclusions.filter(item => item.trim() !== '')
-    const filteredExclusions = exclusions.filter(item => item.trim() !== '')
-    const filteredThingsToCarry = thingsToCarry.filter(item => item.trim() !== '')
+    const filteredInclusions = inclusions.filter(item => item && item.trim() !== '')
+    const filteredExclusions = exclusions.filter(item => item && item.trim() !== '')
+    const filteredThingsToCarry = thingsToCarry.filter(item => item && item.trim() !== '')
     const filteredItinerary = itinerary.map(day => ({
       ...day,
       activities: day.activities.filter(activity => activity.description.trim() !== '')
     })).filter(day => day.title.trim() !== '' || day.activities.length > 0)
 
-    onSubmit({
+    const formattedData = {
       ...data,
       inclusions: filteredInclusions,
       exclusions: filteredExclusions,
       things_to_carry: filteredThingsToCarry,
       itinerary: filteredItinerary
-    })
+    }
+    
+    console.log('Submitting trek data:', formattedData)
+    onSubmit(formattedData)
   }
 
   return (
