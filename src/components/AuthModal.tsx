@@ -25,7 +25,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
       : await signInWithEmail(email, password)
 
     if (result.error) {
-      setError(result.error)
+      // Provide more user-friendly error messages
+      if (result.error.includes('Invalid login credentials')) {
+        setError(isSignUp 
+          ? 'Unable to create account. Please check your email and password.'
+          : 'Invalid email or password. Please check your credentials and try again.'
+        )
+      } else if (result.error.includes('Email not confirmed')) {
+        setError('Please check your email and click the confirmation link before signing in.')
+      } else if (result.error.includes('User already registered')) {
+        setError('An account with this email already exists. Try signing in instead.')
+      } else {
+        setError(result.error)
+      }
     } else {
       onClose()
     }
@@ -128,6 +140,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-blue-700 text-sm">
               <strong>Admin Access:</strong> Use email "admin@trekzone.com" to get admin privileges.
+            </p>
+          </div>
+        )}
+
+        {!isSignUp && (
+          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-amber-700 text-sm">
+              <strong>First time here?</strong> You need to create an account first. Click "Sign Up" above.
             </p>
           </div>
         )}
