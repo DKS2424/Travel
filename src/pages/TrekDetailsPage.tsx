@@ -274,9 +274,10 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
             </motion.div>
 
             {/* Inclusions & Exclusions */}
+            {/* Inclusions, Exclusions & Things to Carry */}
             <motion.div
               variants={itemVariants}
-              className="grid md:grid-cols-2 gap-6"
+              className="grid md:grid-cols-3 gap-6"
             >
               {/* Inclusions */}
               <div className="bg-white rounded-xl shadow-lg p-8 border border-slate-100">

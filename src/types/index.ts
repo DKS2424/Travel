@@ -13,6 +13,7 @@ export interface Trek {
   current_participants: number
   inclusions: string[]
   exclusions: string[]
+  things_to_carry: string[]
   itinerary: ItineraryDay[]
   created_at: string
   created_by: string

@@ -17,6 +17,7 @@ type FormData = Omit<Trek, 'id' | 'created_at' | 'created_by'>
 export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isLoading }) => {
   const [inclusions, setInclusions] = useState<string[]>(trek?.inclusions || [''])
   const [exclusions, setExclusions] = useState<string[]>(trek?.exclusions || [''])
+  const [thingsToCarry, setThingsToCarry] = useState<string[]>(trek?.things_to_carry || [''])
   const [itinerary, setItinerary] = useState<ItineraryDay[]>(trek?.itinerary || [])
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -34,6 +35,7 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
       current_participants: trek.current_participants,
       inclusions: trek.inclusions || [],
       exclusions: trek.exclusions || [],
+      things_to_carry: trek.things_to_carry || [],
       itinerary: trek.itinerary || []
     } : {
       title: '',
@@ -49,6 +51,7 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
       current_participants: 0,
       inclusions: [],
       exclusions: [],
+      things_to_carry: [],
       itinerary: []
     }
   })
@@ -79,6 +82,20 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
     const updated = [...exclusions]
     updated[index] = value
     setExclusions(updated)
+  }
+
+  const addThingToCarry = () => {
+    setThingsToCarry([...thingsToCarry, ''])
+  }
+
+  const removeThingToCarry = (index: number) => {
+    setThingsToCarry(thingsToCarry.filter((_, i) => i !== index))
+  }
+
+  const updateThingToCarry = (index: number, value: string) => {
+    const updated = [...thingsToCarry]
+    updated[index] = value
+    setThingsToCarry(updated)
   }
 
   const addItineraryDay = () => {
@@ -129,6 +146,7 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
   const handleFormSubmit = (data: FormData) => {
     const filteredInclusions = inclusions.filter(item => item.trim() !== '')
     const filteredExclusions = exclusions.filter(item => item.trim() !== '')
+    const filteredThingsToCarry = thingsToCarry.filter(item => item.trim() !== '')
     const filteredItinerary = itinerary.map(day => ({
       ...day,
       activities: day.activities.filter(activity => activity.description.trim() !== '')
@@ -138,6 +156,7 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
       ...data,
       inclusions: filteredInclusions,
       exclusions: filteredExclusions,
+      things_to_carry: filteredThingsToCarry,
       itinerary: filteredItinerary
     })
   }
@@ -401,6 +420,47 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => removeExclusion(index)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors mt-1"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </motion.button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Things to Carry */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-sm font-medium text-slate-700">
+                Things to Carry
+              </label>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={addThingToCarry}
+                className="flex items-center space-x-1 px-3 py-1 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg text-sm transition-colors"
+              >
+                <Plus className="h-3 w-3" />
+                <span>Add</span>
+              </motion.button>
+            </div>
+            <div className="space-y-2">
+              {thingsToCarry.map((item, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <textarea
+                    value={item}
+                    onChange={(e) => updateThingToCarry(index, e.target.value)}
+                    rows={2}
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+                    placeholder="e.g., Waterproof hiking boots, Rain jacket"
+                  />
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => removeThingToCarry(index)}
                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors mt-1"
                   >
                     <Trash2 className="h-4 w-4" />
