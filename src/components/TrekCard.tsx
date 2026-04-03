@@ -69,8 +69,6 @@ export const TrekCard: React.FC<TrekCardProps> = ({ trek, index, onViewDetails }
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-50px" }}
-        whileHover="hover"
-        variants={hoverVariants}
         className="bg-white rounded-xl shadow-lg overflow-hidden group cursor-pointer relative"
         style={{ willChange: 'transform' }}
       >
