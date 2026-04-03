@@ -1,13 +1,13 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import { 
-  ArrowLeft, 
-  MapPin, 
-  Clock, 
-  Users, 
-  Star, 
-  DollarSign, 
-  Mountain, 
+import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  ArrowLeft,
+  MapPin,
+  Clock,
+  Users,
+  Star,
+  DollarSign,
+  Mountain,
   Calendar,
   Shield,
   X,
@@ -16,9 +16,11 @@ import {
   Route,
   Sunrise,
   Camera,
-  Heart
+  Heart,
+  Mail
 } from 'lucide-react'
 import { Trek } from '../types'
+import { EnquiryForm } from '../components/EnquiryForm'
 
 interface TrekDetailsPageProps {
   trek: Trek
@@ -40,6 +42,8 @@ const difficultyIcons = {
 }
 
 export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNavigateBack }) => {
+  const [showEnquiryForm, setShowEnquiryForm] = useState(false)
+
   const formatFullDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -422,24 +426,36 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
                 </div>
               </div>
 
-              <motion.button
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                disabled={trek.current_participants >= trek.max_participants}
-              >
-                {trek.current_participants >= trek.max_participants ? (
-                  <>
-                    <X className="h-5 w-5 inline mr-2" />
-                    Fully Booked
-                  </>
-                ) : (
-                  <>
-                    <Heart className="h-5 w-5 inline mr-2" />
-                    Book This Trek
-                  </>
-                )}
-              </motion.button>
+              <div className="space-y-3">
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  disabled={trek.current_participants >= trek.max_participants}
+                >
+                  {trek.current_participants >= trek.max_participants ? (
+                    <>
+                      <X className="h-5 w-5 inline mr-2" />
+                      Fully Booked
+                    </>
+                  ) : (
+                    <>
+                      <Heart className="h-5 w-5 inline mr-2" />
+                      Book This Trek
+                    </>
+                  )}
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowEnquiryForm(true)}
+                  className="w-full py-4 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2"
+                >
+                  <Mail className="h-5 w-5" />
+                  <span>Send Enquiry</span>
+                </motion.button>
+              </div>
 
               <p className="text-xs text-slate-500 text-center mt-4">
                 Free cancellation up to 48 hours before departure
@@ -477,6 +493,19 @@ export const TrekDetailsPage: React.FC<TrekDetailsPageProps> = ({ trek, onNaviga
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showEnquiryForm && (
+          <EnquiryForm
+            trekId={trek.id}
+            trekTitle={trek.title}
+            onClose={() => setShowEnquiryForm(false)}
+            onSuccess={() => {
+              // Refresh page or show success message
+            }}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

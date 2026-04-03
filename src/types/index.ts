@@ -37,3 +37,14 @@ export interface User {
   name: string
   avatar_url?: string
 }
+
+export interface Enquiry {
+  id: string
+  trek_id: string
+  user_email: string
+  user_name: string
+  user_phone: string
+  message: string
+  status: 'pending' | 'responded' | 'rejected'
+  created_at: string
+}

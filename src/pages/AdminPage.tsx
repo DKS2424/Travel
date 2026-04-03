@@ -1,20 +1,9 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Plus, 
-  Edit2, 
-  Trash2, 
-  Users, 
-  MapPin, 
-  ArrowLeft, 
-  TrendingUp,
-  Calendar,
-  DollarSign,
-  Activity,
-  Mountain
-} from 'lucide-react'
+import { Plus, CreditCard as Edit2, Trash2, Users, MapPin, ArrowLeft, TrendingUp, Calendar, DollarSign, Activity, Mountain, Mail, Check, X as XIcon } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useTreks } from '../hooks/useTreks'
+import { useEnquiries } from '../hooks/useEnquiries'
 import { TrekForm } from '../components/TrekForm'
 import { Trek } from '../types'
 
@@ -25,9 +14,11 @@ interface AdminPageProps {
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
   const { user } = useAuth()
   const { treks, addTrek, updateTrek, deleteTrek } = useTreks()
+  const { enquiries, updateEnquiryStatus } = useEnquiries()
   const [showForm, setShowForm] = useState(false)
   const [editingTrek, setEditingTrek] = useState<Trek | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState<'treks' | 'enquiries'>('treks')
 
   const handleSubmit = async (data: Omit<Trek, 'id' | 'created_at' | 'created_by'>) => {
     setIsLoading(true)
@@ -249,7 +240,46 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
           </motion.div>
         </motion.div>
 
+        {/* Tabs */}
+        <motion.div
+          variants={itemVariants}
+          className="flex gap-2 mb-8 border-b border-slate-200"
+        >
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setActiveTab('treks')}
+            className={`px-6 py-3 font-medium transition-all ${
+              activeTab === 'treks'
+                ? 'text-emerald-600 border-b-2 border-emerald-600'
+                : 'text-slate-600 hover:text-slate-800'
+            }`}
+          >
+            <div className="flex items-center space-x-2">
+              <Activity className="h-5 w-5" />
+              <span>Manage Treks</span>
+            </div>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setActiveTab('enquiries')}
+            className={`px-6 py-3 font-medium transition-all ${
+              activeTab === 'enquiries'
+                ? 'text-emerald-600 border-b-2 border-emerald-600'
+                : 'text-slate-600 hover:text-slate-800'
+            }`}
+          >
+            <div className="flex items-center space-x-2">
+              <Mail className="h-5 w-5" />
+              <span>Enquiries ({enquiries.length})</span>
+            </div>
+          </motion.button>
+        </motion.div>
+
         {/* Treks Table */}
+        {activeTab === 'treks' && (
         <motion.div
           variants={itemVariants}
           className="bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden"
@@ -378,6 +408,101 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
             </div>
           )}
         </motion.div>
+        )}
+
+        {/* Enquiries Table */}
+        {activeTab === 'enquiries' && (
+        <motion.div
+          variants={itemVariants}
+          className="bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden"
+        >
+          <div className="p-6 border-b border-slate-100">
+            <h3 className="text-xl font-bold text-slate-800 flex items-center space-x-2">
+              <Mail className="h-6 w-6 text-blue-600" />
+              <span>Trek Enquiries</span>
+            </h3>
+          </div>
+
+          {enquiries.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="p-12 text-center"
+            >
+              <Mail className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+              <h4 className="text-xl font-semibold text-slate-600 mb-2">No enquiries yet</h4>
+              <p className="text-slate-500">People interested in your treks will appear here</p>
+            </motion.div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Name</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Trek</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Email</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Phone</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {enquiries.map((enquiry, index) => {
+                    const trek = treks.find(t => t.id === enquiry.trek_id)
+                    return (
+                      <motion.tr
+                        key={enquiry.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                      >
+                        <td className="px-6 py-4 font-medium text-slate-800">{enquiry.user_name}</td>
+                        <td className="px-6 py-4 text-slate-600">{trek?.title || 'Unknown Trek'}</td>
+                        <td className="px-6 py-4 text-slate-600 text-sm">{enquiry.user_email}</td>
+                        <td className="px-6 py-4 text-slate-600">{enquiry.user_phone}</td>
+                        <td className="px-6 py-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            enquiry.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : enquiry.status === 'responded'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {enquiry.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center space-x-2">
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => updateEnquiryStatus(enquiry.id, 'responded')}
+                              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                              title="Mark as responded"
+                            >
+                              <Check className="h-4 w-4" />
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => updateEnquiryStatus(enquiry.id, 'rejected')}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Mark as rejected"
+                            >
+                              <XIcon className="h-4 w-4" />
+                            </motion.button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </motion.div>
+        )}
       </div>
 
       <AnimatePresence>
