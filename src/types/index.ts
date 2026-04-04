@@ -5,12 +5,14 @@ export interface Trek {
   location: string
   duration: string
   difficulty: 'Easy' | 'Moderate' | 'Hard' | 'Expert'
+  category: 'summer' | 'winter' | 'seasonal' | 'all-season'
   price: number
   image_url: string
   start_date: string
   end_date: string
   max_participants: number
   current_participants: number
+  is_enabled: boolean
   inclusions: string[]
   exclusions: string[]
   things_to_carry: string[]

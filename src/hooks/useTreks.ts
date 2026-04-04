@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { Trek } from '../types'
 
-export const useTreks = () => {
+export const useTreks = (onlyEnabled: boolean = false) => {
   const [treks, setTreks] = useState<Trek[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -17,10 +17,16 @@ export const useTreks = () => {
 
       setLoading(true)
       setError(null)
-      const { data, error } = await supabase
+      let query = supabase
         .from('treks')
         .select('*')
         .order('start_date', { ascending: true })
+
+      if (onlyEnabled) {
+        query = query.eq('is_enabled', true)
+      }
+
+      const { data, error } = await query
 
       if (error) {
         throw error
@@ -107,7 +113,7 @@ export const useTreks = () => {
 
   useEffect(() => {
     fetchTreks()
-  }, [])
+  }, [onlyEnabled])
 
   return {
     treks,

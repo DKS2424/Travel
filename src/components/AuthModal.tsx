@@ -135,22 +135,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
             </button>
           </p>
         </div>
-
-        {isSignUp && (
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-blue-700 text-sm">
-              <strong>Admin Access:</strong> Use email "admin@trekzone.com" to get admin privileges.
-            </p>
-          </div>
-        )}
-
-        {!isSignUp && (
-          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-amber-700 text-sm">
-              <strong>First time here?</strong> You need to create an account first. Click "Sign Up" above.
-            </p>
-          </div>
-        )}
       </motion.div>
     </motion.div>
   )

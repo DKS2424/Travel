@@ -13,7 +13,7 @@ interface AdminPageProps {
 
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
   const { user } = useAuth()
-  const { treks, addTrek, updateTrek, deleteTrek } = useTreks()
+  const { treks, addTrek, updateTrek, deleteTrek } = useTreks(false)
   const { enquiries, updateEnquiryStatus } = useEnquiries()
   const [showForm, setShowForm] = useState(false)
   const [editingTrek, setEditingTrek] = useState<Trek | null>(null)
@@ -328,10 +328,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                 <thead className="bg-slate-50">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Trek</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Category</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Location</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Dates</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Participants</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Price</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Status</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Actions</th>
                   </tr>
                 </thead>
@@ -346,9 +348,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
-                          <motion.img 
+                          <motion.img
                             whileHover={{ scale: 1.1 }}
-                            src={trek.image_url} 
+                            src={trek.image_url}
                             alt={trek.title}
                             className="w-12 h-12 rounded-lg object-cover shadow-md"
                           />
@@ -357,6 +359,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                             <p className="text-sm text-slate-500">{trek.difficulty}</p>
                           </div>
                         </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          trek.category === 'summer' ? 'bg-yellow-100 text-yellow-800' :
+                          trek.category === 'winter' ? 'bg-blue-100 text-blue-800' :
+                          trek.category === 'seasonal' ? 'bg-green-100 text-green-800' :
+                          'bg-slate-100 text-slate-800'
+                        }`}>
+                          {trek.category}
+                        </span>
                       </td>
                       <td className="px-6 py-4 text-slate-600">{trek.location}</td>
                       <td className="px-6 py-4 text-slate-600">
@@ -368,7 +380,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <div className="w-full bg-slate-200 rounded-full h-2">
-                            <div 
+                            <div
                               className="bg-emerald-600 h-2 rounded-full transition-all duration-300"
                               style={{ width: `${(trek.current_participants / trek.max_participants) * 100}%` }}
                             />
@@ -380,6 +392,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                       </td>
                       <td className="px-6 py-4 text-slate-600 font-semibold">
                         ${trek.price}
+                      </td>
+                      <td className="px-6 py-4">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => updateTrek(trek.id, { is_enabled: !trek.is_enabled })}
+                          className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                            trek.is_enabled
+                              ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
+                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          {trek.is_enabled ? 'Enabled' : 'Disabled'}
+                        </motion.button>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">

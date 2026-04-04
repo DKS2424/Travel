@@ -42,9 +42,10 @@ const FloatingParticles: React.FC = () => {
 
 function App() {
   const { loading: authLoading, user, isAdminUser } = useAuth()
-  const { treks, loading: treksLoading } = useTreks()
+  const { treks, loading: treksLoading } = useTreks(!isAdminUser)
   const [currentPage, setCurrentPage] = useState<'home' | 'admin' | 'trek-details'>('home')
   const [selectedTrek, setSelectedTrek] = useState<Trek | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'summer' | 'winter' | 'seasonal' | 'all-season'>('all')
 
   if (authLoading || treksLoading) {
     return <LoadingSpinner />
@@ -78,6 +79,10 @@ function App() {
     setSelectedTrek(trek)
     setCurrentPage('trek-details')
   }
+
+  const filteredTreks = selectedCategory === 'all'
+    ? treks
+    : treks.filter(trek => trek.category === selectedCategory)
 
   return (
     <div className="min-h-screen bg-slate-50 relative overflow-hidden">
@@ -132,14 +137,38 @@ function App() {
               whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-xl text-slate-600 max-w-2xl mx-auto"
+              className="text-xl text-slate-600 max-w-2xl mx-auto mb-8"
             >
-              Choose from our carefully curated selection of adventures, each designed to 
+              Choose from our carefully curated selection of adventures, each designed to
               challenge and inspire while providing unforgettable experiences.
             </motion.p>
+
+            <motion.div
+              initial={{ y: 30, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="flex flex-wrap justify-center gap-3"
+            >
+              {['all', 'summer', 'winter', 'seasonal', 'all-season'].map((category) => (
+                <motion.button
+                  key={category}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setSelectedCategory(category as typeof selectedCategory)}
+                  className={`px-6 py-2 rounded-full font-medium transition-all ${
+                    selectedCategory === category
+                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg'
+                      : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                  }`}
+                >
+                  {category === 'all' ? 'All Treks' : category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ')}
+                </motion.button>
+              ))}
+            </motion.div>
           </div>
           
-          {treks.length === 0 ? (
+          {filteredTreks.length === 0 ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -147,11 +176,11 @@ function App() {
               className="text-center py-16"
             >
               <motion.div
-                animate={{ 
+                animate={{
                   y: [0, -10, 0],
                   rotate: [0, 5, -5, 0]
                 }}
-                transition={{ 
+                transition={{
                   duration: 3,
                   repeat: Infinity,
                   ease: "easeInOut"
@@ -160,16 +189,16 @@ function App() {
               >
                 <Route className="h-16 w-16 text-slate-300 mx-auto" />
               </motion.div>
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
                 className="text-xl text-slate-500"
               >
-                {treksLoading ? 'Loading treks...' : 'No treks available at the moment.'}
+                {treksLoading ? 'Loading treks...' : `No treks available${selectedCategory !== 'all' ? ` in ${selectedCategory} category` : ''}.`}
               </motion.p>
-              {isAdminUser && (
-                <motion.p 
+              {isAdminUser && treks.length === 0 && (
+                <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
@@ -180,17 +209,17 @@ function App() {
               )}
             </motion.div>
           ) : (
-            <motion.div 
+            <motion.div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, staggerChildren: 0.1 }}
             >
-              {treks.map((trek, index) => (
-                <TrekCard 
-                  key={trek.id} 
-                  trek={trek} 
-                  index={index} 
+              {filteredTreks.map((trek, index) => (
+                <TrekCard
+                  key={trek.id}
+                  trek={trek}
+                  index={index}
                   onViewDetails={() => handleViewTrekDetails(trek)}
                 />
               ))}

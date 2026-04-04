@@ -27,12 +27,14 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
       location: trek.location,
       duration: trek.duration,
       difficulty: trek.difficulty,
+      category: trek.category,
       price: trek.price,
       image_url: trek.image_url,
       start_date: trek.start_date,
       end_date: trek.end_date,
       max_participants: trek.max_participants,
       current_participants: trek.current_participants,
+      is_enabled: trek.is_enabled,
       inclusions: trek.inclusions || [],
       exclusions: trek.exclusions || [],
       things_to_carry: trek.things_to_carry || [],
@@ -43,12 +45,14 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
       location: '',
       duration: '',
       difficulty: 'Easy' as const,
+      category: 'all-season' as const,
       price: 0,
       image_url: 'https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg',
       start_date: '',
       end_date: '',
       max_participants: 20,
       current_participants: 0,
+      is_enabled: true,
       inclusions: [],
       exclusions: [],
       things_to_carry: [],
@@ -237,7 +241,7 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Duration *
@@ -269,6 +273,21 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
+                Category *
+              </label>
+              <select
+                {...register('category', { required: 'Category is required' })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="summer">Summer</option>
+                <option value="winter">Winter</option>
+                <option value="seasonal">Seasonal</option>
+                <option value="all-season">All Season</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Price (USD) *
               </label>
               <input
@@ -281,6 +300,17 @@ export const TrekForm: React.FC<TrekFormProps> = ({ trek, onSubmit, onClose, isL
                 <p className="text-red-500 text-sm mt-1">{errors.price.message}</p>
               )}
             </div>
+          </div>
+
+          <div className="flex items-center space-x-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <input
+              type="checkbox"
+              {...register('is_enabled')}
+              className="w-5 h-5 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+            />
+            <label className="text-sm font-medium text-slate-700">
+              Enable this trek (visible to users)
+            </label>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
